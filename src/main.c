@@ -307,13 +307,9 @@ void stack_push(Stack* stack, Number n) {
 Number stack_pop(Stack* stack) { return stack->items[--stack->count]; }
 
 void draw_stack(Rectangle container, Stack* stack) {
-    BeginScissorMode(container.x, container.y, container.width,
-                     container.height);
-
     container = margin_rect(container, 8);
 
     const int spacing = 2;
-    int oy = (gui_font_size + spacing) * stack->count;
 
     for (size_t i = 0; i < stack->count; i++) {
         char* num;
@@ -345,8 +341,6 @@ void draw_stack(Rectangle container, Stack* stack) {
                      (gui_font_size + spacing) * (stack->count - i),
                  gui_font_size, color_palette[4]);
     }
-
-    EndScissorMode();
 }
 
 void stack_pop_onto_text_buffer(Stack* st, TextBuffer* tb) {
@@ -403,7 +397,7 @@ void perform_binary_op(TextBuffer* tb, Stack* st, BinaryOp* op) {
 int main() {
     TraceLog(LOG_INFO, "Hallo");
 
-    InitWindow(450, 1000, "rcalc");
+    InitWindow(500, 1000, "rcalc");
 
     TextBuffer tb = {0};
     Stack st = {0};
@@ -467,7 +461,10 @@ int main() {
                 text_toggle_negative(&tb);
                 break;
             case POP_TO_BUFFER:
-                if (st.count) stack_pop_onto_text_buffer(&st, &tb);
+                if (st.count)
+                    stack_pop_onto_text_buffer(&st, &tb);
+                else
+                    text_buffer_clear(&tb);
                 break;
             case SWAP:
                 if ((tb.count && st.count) || st.count > 2) {
