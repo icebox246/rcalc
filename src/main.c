@@ -320,8 +320,8 @@ KeyboardButton draw_keyboard(Rectangle container) {
 
     KeyboardButton pressed_button = NONE;
 
-    button_normal_color = 4;
-    button_pressed_color = 1;
+    button_normal_color = 1;
+    button_pressed_color = 3;
 
     {
         int digit = 0;
@@ -348,8 +348,8 @@ KeyboardButton draw_keyboard(Rectangle container) {
         }
     }
 
-    button_normal_color = 2;
-    button_pressed_color = 1;
+    button_normal_color = 1;
+    button_pressed_color = 4;
 
     if (im_button(margin_rect(split_rect_grid(container, gw, gh, 5, 1),
                               button_margin),
@@ -481,7 +481,7 @@ void draw_stack(Rectangle container, Stack* stack) {
         DrawText(num, container.x + container.width - w,
                  container.y + container.height -
                      (gui_font_size + spacing) * (stack->count - i),
-                 gui_font_size, color_palette[4]);
+                 gui_font_size, color_palette[3]);
     }
 }
 

@@ -11,8 +11,8 @@
              .a = 0xff})
 
 static const Color color_palette[] = {
-    COLOR_RGB(0x151414), COLOR_RGB(0x383B43), COLOR_RGB(0x70798C),
-    COLOR_RGB(0xE9E0D8), COLOR_RGB(0xBEB089),
+    COLOR_RGB(0x000000), COLOR_RGB(0x3A3C4E), COLOR_RGB(0x4D4F68),
+    COLOR_RGB(0x7E9CD8), COLOR_RGB(0x7AA89F),
 };
 
 static const int gui_font_size = 30;
