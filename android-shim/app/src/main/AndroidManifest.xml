@@ -6,7 +6,9 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 
     <application android:allowBackup="false"
-                 android:label="RCalc">
+                 android:label="RCalc"
+                 android:icon="@drawable/ic_launcher"
+                 android:appCategory="productivity">
 
 
         <activity android:name="android.app.NativeActivity" 

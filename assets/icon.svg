@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="128"
+   height="128"
+   viewBox="0 0 33.866666 33.866666"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="../android-shim/app/src/main/res/drawable/icon.png"
+   inkscape:export-xdpi="192"
+   inkscape:export-ydpi="192"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="false"
+     showguides="true"
+     inkscape:zoom="6.9037815"
+     inkscape:cx="30.997505"
+     inkscape:cy="64.095308"
+     inkscape:window-width="1920"
+     inkscape:window-height="1061"
+     inkscape:window-x="0"
+     inkscape:window-y="19"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+       id="rect501"
+       width="12.099183"
+       height="0.5488624"
+       x="10.134185"
+       y="16.119886"
+       inkscape:export-filename="../android-shim/app/src/main/res/drawable/rect501.png"
+       inkscape:export-xdpi="192"
+       inkscape:export-ydpi="192" />
+    <rect
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+       id="rect501-3"
+       width="9.4345875"
+       height="0.5488624"
+       x="12.79878"
+       y="14.185183" />
+    <rect
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+       id="rect501-3-6"
+       width="9.4345875"
+       height="0.5488624"
+       x="12.79878"
+       y="12.250476" />
+    <rect
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+       id="rect501-3-6-7"
+       width="9.4345875"
+       height="0.5488624"
+       x="12.79878"
+       y="10.315768" />
+    <g
+       id="g622"
+       transform="matrix(0.66027931,0,0,0.66023969,7.4164351,5.6444054)"
+       style="stroke-width:1.51456">
+      <rect
+         style="fill:#ffffff;stroke:#ffffff;stroke-width:0.801453;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+         id="rect501-3-5"
+         width="8.6217337"
+         height="0.83130783"
+         x="5.0385685"
+         y="24.428688" />
+      <rect
+         style="fill:#ffffff;stroke:#ffffff;stroke-width:0.801453;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+         id="rect593"
+         width="8.6217337"
+         height="0.83130783"
+         x="20.533476"
+         y="-9.765089"
+         transform="rotate(90)" />
+    </g>
+    <g
+       id="g618"
+       transform="matrix(0.66027931,0,0,0.66023969,5.7893607,5.6633805)"
+       style="stroke-width:1.51456">
+      <rect
+         style="fill:#ffffff;stroke:#ffffff;stroke-width:0.801453;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+         id="rect597"
+         width="7.9718843"
+         height="0.83130783"
+         x="21.183325"
+         y="-22.928741"
+         transform="rotate(90)" />
+      <g
+         id="g603"
+         transform="translate(1.130824,0.26743938)"
+         style="stroke-width:1.51456">
+        <g
+           id="g607"
+           transform="translate(-3.544482e-8,1.3090734)"
+           style="stroke-width:1.51456">
+          <rect
+             style="fill:#ffffff;stroke:#ffffff;stroke-width:0.801453;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+             id="rect595"
+             width="5.0573616"
+             height="0.83130783"
+             x="-3.3220854"
+             y="28.503811"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#ffffff;stroke:#ffffff;stroke-width:0.801453;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:5;paint-order:fill markers stroke"
+             id="rect599"
+             width="5.0573616"
+             height="0.83130783"
+             x="-33.561172"
+             y="-1.7352762"
+             transform="matrix(-0.70710678,-0.70710678,-0.70710678,0.70710678,0,0)" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
