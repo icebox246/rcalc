@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <errno.h>
 #include <limits.h>
+#include <math.h>
 #include <raylib.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -121,44 +123,50 @@ typedef struct {
     bool period_present;
     int period_position;
     bool negative;
+    float last_edit_time;
 } TextBuffer;
 
 void text_buffer_append_digit(TextBuffer* tb, int digit) {
     assert(digit >= 0 && digit <= 9);
-    if (!tb->period_present &&
-        tb->count == max_text_buffer_size - 1 - number_decimal_digits)
-        return;
-    if (tb->period_present &&
-        tb->count - tb->period_position - 1 == number_decimal_digits)
-        return;
-    if (tb->cursor < max_text_buffer_size) {
-        if (tb->cursor < tb->count) {
-            assert(false && "Unimplemented");
-        }
-        tb->buffer[tb->cursor++] = '0' + digit;
-        tb->count++;
+    if (tb->count >= max_text_buffer_size) return;
+
+    if (tb->cursor < tb->count) {
+        memmove(&tb->buffer[tb->cursor + 1], &tb->buffer[tb->cursor],
+                max_text_buffer_size - tb->cursor);
     }
+    tb->buffer[tb->cursor++] = '0' + digit;
+    tb->count++;
+    tb->last_edit_time = GetTime();
 }
 
 void text_buffer_append_period(TextBuffer* tb) {
     if (tb->period_present) return;
+    if (tb->count >= max_text_buffer_size) return;
+
+    if (tb->cursor < tb->count) {
+        memmove(&tb->buffer[tb->cursor + 1], &tb->buffer[tb->cursor],
+                max_text_buffer_size - tb->cursor);
+    }
     tb->period_present = true;
     tb->period_position = tb->cursor;
     tb->buffer[tb->cursor++] = '.';
     tb->count++;
+    tb->last_edit_time = GetTime();
 }
 
 void text_buffer_backspace(TextBuffer* tb) {
     if (tb->cursor == 0) return;
+    if (tb->buffer[tb->cursor - 1] == '.') {
+        tb->period_present = false;
+    }
     if (tb->cursor != tb->count) {
-        assert(false && "Unimplemented");
+        memmove(&tb->buffer[tb->cursor - 1], &tb->buffer[tb->cursor],
+                max_text_buffer_size - tb->cursor);
     }
     tb->cursor--;
     tb->count--;
-    if (tb->buffer[tb->count] == '.') {
-        tb->period_present = false;
-    }
     tb->buffer[tb->count] = '\0';
+    tb->last_edit_time = GetTime();
 }
 
 void text_toggle_negative(TextBuffer* tb) { tb->negative = !tb->negative; }
@@ -168,18 +176,41 @@ void text_buffer_clear(TextBuffer* tb) { memset(tb, 0, sizeof(TextBuffer)); }
 Number text_buffer_get(TextBuffer* tb) {
     char* end;
     Number out = strtoll(tb->buffer, &end, 10);
+    if (errno == ERANGE) {
+        if (!tb->negative)
+            return LLONG_MAX;
+        else
+            return LLONG_MIN;
+    }
+    if ((__int128_t)out * (__int128_t)number_scaling_factor > LLONG_MAX)
+        return LLONG_MAX;
+
     out *= number_scaling_factor;
+
     if (end != tb->buffer + tb->count) {
         if (*end == '.') {
             char* begin = ++end;
-            Number mantisa = strtoll(begin, &end, 10);
+
+            Number mantisa = 0;
+
+            while (*end && (end - begin + 1) <= number_decimal_digits) {
+                mantisa *= 10;
+                mantisa += *end - '0';
+                end++;
+            }
+
             for (int i = number_decimal_digits - (end - begin); i > 0; i--) {
                 mantisa *= 10;
             }
+
             out += mantisa;
+        } else {
+            assert(false && "Unreachable");
         }
     }
+
     if (tb->negative) out *= -1;
+
     return out;
 }
 
@@ -198,29 +229,55 @@ void draw_text_buffer(Rectangle container, TextBuffer* tb) {
         w *= t;
     }
 
+    Vector2 mouse = GetMousePosition();
+
+    if (CheckCollisionPointRec(mouse, container) &&
+        IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        float mx = mouse.x - (container.x + container.width - w);
+
+        size_t b;
+        float bd = INFINITY;
+
+        for (size_t i = 0; i <= tb->count; i++) {
+            char temp = tb->buffer[i];
+            tb->buffer[i] = '\0';
+            float tw = MeasureText(tb->buffer, font_size);
+            float d = fabsf(tw - mx);
+            if (d < bd) {
+                b = i;
+                bd = d;
+            }
+            tb->buffer[i] = temp;
+        }
+
+        tb->cursor = b;
+    }
+
     DrawText(tb->buffer, container.x + container.width - w,
              container.y + (container.height - font_size) / 2, font_size,
              color_palette[3]);
 
     if (tb->negative) {
-        DrawText("-", container.x + container.width - w - font_size,
+        DrawText("-", container.x + container.width - w - font_size * 0.5f,
                  container.y + (container.height - font_size) / 2, font_size,
-                 color_palette[3]);
+                 color_palette[4]);
     }
 
-    /* { */
-    /*     char temp = tb->buffer[tb->cursor]; */
+    if (!((int)((GetTime() - tb->last_edit_time) / 0.5) & 1)) {
+        char temp = tb->buffer[tb->cursor];
 
-    /*     int ox = MeasureText(tb->buffer, font_size); */
+        tb->buffer[tb->cursor] = '\0';
 
-    /*     const int cursor_width = 4; */
+        int ox = MeasureText(tb->buffer, font_size);
 
-    /*     DrawRectangle(container.x + container.width - w + ox, */
-    /*                   container.y + (container.height - font_size) / 2, */
-    /*                   cursor_width, font_size, color_palette[2]); */
+        const int cursor_width = 2;
 
-    /*     tb->buffer[tb->cursor] = temp; */
-    /* } */
+        DrawRectangle(container.x + container.width - w + ox + cursor_width,
+                      container.y + (container.height - font_size) / 2,
+                      cursor_width, font_size, color_palette[4]);
+
+        tb->buffer[tb->cursor] = temp;
+    }
 }
 
 // keyboard
@@ -257,7 +314,7 @@ KeyboardButton draw_keyboard(Rectangle container) {
 
     DrawRectangleRec(container, color_palette[0]);
 
-    const int button_margin = 4;
+    const int button_margin = 2;
 
     container = margin_rect(container, button_margin);
 
@@ -505,7 +562,6 @@ int main() {
 
         {
             Rectangle upper_pane = split_rect_vert(screen_rect, 0.45);
-            DrawRectangleRec(upper_pane, color_palette[1]);
             draw_stack(split_rect_vert(upper_pane, 0.8), &st);
             draw_text_buffer(split_rect_vert(upper_pane, -0.8), &tb);
         }
