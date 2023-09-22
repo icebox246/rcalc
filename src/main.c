@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <raylib.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,7 +36,7 @@ Number number_sub(Number a, Number b) {
 Number number_mul(Number a, Number b) {
     __int128_t ta = a;
     __int128_t tb = b;
-    return number_handle_overflow(ta * tb / number_scaling_factor);
+    return number_handle_overflow((ta * tb) / number_scaling_factor);
 }
 
 Number number_div(Number a, Number b) {
@@ -43,6 +44,70 @@ Number number_div(Number a, Number b) {
     __int128_t ta = a;
     __int128_t tb = b;
     return number_handle_overflow(ta * number_scaling_factor / tb);
+}
+
+Number number_root(Number x, int base) {
+    if (x == LLONG_MAX) return LLONG_MAX;
+    if (x == LLONG_MIN) return LLONG_MIN;
+
+    __int128_t l = 0, r = x;
+    while (l != r) {
+        Number c = ((__int128_t)l + (__int128_t)r + 1) / 2;
+        Number a = number_scaling_factor;
+        for (size_t i = 0; i < base; i++) {
+            a = number_mul(a, c);
+        }
+        if (a > x) {
+            r = c - 1;
+        } else {
+            l = c;
+        }
+    }
+
+    return l;
+}
+
+Number number_pow_i(Number x, int e) {
+    Number acc = number_scaling_factor;
+    Number p2 = x;
+
+    while (e) {
+        if (e & 1) acc = number_mul(acc, p2);
+        e >>= 1;
+        p2 = number_mul(p2, p2);
+    }
+
+    return acc;
+}
+
+Number number_pow(Number x, Number y) {
+    if (y < 0) {
+        return number_pow(number_div(number_scaling_factor, x), -y);
+    }
+
+    Number acc = number_pow_i(x, y / number_scaling_factor);
+
+    if (x > 0) {
+        uint64_t mantisa = y % number_scaling_factor;
+
+        Number digs[number_decimal_digits];
+        digs[0] = number_root(x, 10);
+        for (size_t i = 1; i < number_decimal_digits; i++) {
+            digs[i] = number_root(digs[i - 1], 10);
+        }
+
+        for (int i = number_decimal_digits - 1; i >= 0; i--) {
+            size_t d = mantisa % 10;
+            mantisa /= 10;
+            Number a = number_scaling_factor;
+            for (size_t j = 0; j < d; j++) {
+                a = number_mul(a, digs[i]);
+            }
+            acc = number_mul(acc, a);
+        }
+    }
+
+    return acc;
 }
 
 // text buffer
@@ -179,6 +244,8 @@ typedef enum {
     SUB,
     MUL,
     DIV,
+    POW,
+    SQRT,
     TOGGLE_SIGN,
     POP_TO_BUFFER,
     SWAP,
@@ -186,9 +253,9 @@ typedef enum {
 
 KeyboardButton draw_keyboard(Rectangle container) {
     int gw = 4;
-    int gh = 5;
+    int gh = 6;
 
-    DrawRectangleRec(container, color_palette[1]);
+    DrawRectangleRec(container, color_palette[0]);
 
     const int button_margin = 4;
 
@@ -196,10 +263,13 @@ KeyboardButton draw_keyboard(Rectangle container) {
 
     KeyboardButton pressed_button = NONE;
 
+    button_normal_color = 4;
+    button_pressed_color = 1;
+
     {
         int digit = 0;
         {
-            if (im_button(margin_rect(split_rect_grid(container, gw, gh, 4, 0),
+            if (im_button(margin_rect(split_rect_grid(container, gw, gh, 5, 0),
                                       button_margin),
                           "0")) {
                 pressed_button = DIGIT0;
@@ -207,7 +277,7 @@ KeyboardButton draw_keyboard(Rectangle container) {
         }
         digit++;
 
-        for (int row = 3; row >= 1; row--) {
+        for (int row = 4; row >= 2; row--) {
             for (int col = 0; col <= 2; col++) {
                 const char* label = TextFormat("%d", digit);
                 if (im_button(margin_rect(
@@ -221,61 +291,76 @@ KeyboardButton draw_keyboard(Rectangle container) {
         }
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 4, 1),
+    button_normal_color = 2;
+    button_pressed_color = 1;
+
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 5, 1),
                               button_margin),
                   ".")) {
         pressed_button = PERIOD;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 4, 2),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 5, 2),
                               button_margin),
                   "del")) {
         pressed_button = BACKSPACE;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 4, 3),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 5, 3),
                               button_margin),
                   "push")) {
         pressed_button = PUSH;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 3, 3),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 4, 3),
                               button_margin),
                   "+")) {
         pressed_button = ADD;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 2, 3),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 3, 3),
                               button_margin),
                   "-")) {
         pressed_button = SUB;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 1, 3),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 2, 3),
                               button_margin),
                   "*")) {
         pressed_button = MUL;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 0, 3),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 1, 3),
                               button_margin),
                   "/")) {
         pressed_button = DIV;
     }
 
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 0, 3),
+                              button_margin),
+                  "pow")) {
+        pressed_button = POW;
+    }
+
     if (im_button(margin_rect(split_rect_grid(container, gw, gh, 0, 2),
+                              button_margin),
+                  "sqrt")) {
+        pressed_button = SQRT;
+    }
+
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 1, 2),
                               button_margin),
                   "+/-")) {
         pressed_button = TOGGLE_SIGN;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 0, 1),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 1, 1),
                               button_margin),
                   "pop")) {
         pressed_button = POP_TO_BUFFER;
     }
 
-    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 0, 0),
+    if (im_button(margin_rect(split_rect_grid(container, gw, gh, 1, 0),
                               button_margin),
                   "swap")) {
         pressed_button = SWAP;
@@ -406,10 +491,21 @@ int main() {
         BeginDrawing();
         ClearBackground(color_palette[0]);
 
+        int key;
+        bool shoud_exit = false;
+        while ((key = GetKeyPressed())) {
+            if (key == KEY_BACK) {
+                shoud_exit = true;
+                break;
+            }
+        }
+        if (shoud_exit) break;
+
         Rectangle screen_rect = get_screen_rect();
 
         {
             Rectangle upper_pane = split_rect_vert(screen_rect, 0.45);
+            DrawRectangleRec(upper_pane, color_palette[1]);
             draw_stack(split_rect_vert(upper_pane, 0.8), &st);
             draw_text_buffer(split_rect_vert(upper_pane, -0.8), &tb);
         }
@@ -457,6 +553,20 @@ int main() {
             case DIV:
                 perform_binary_op(&tb, &st, number_div);
                 break;
+            case POW:
+                perform_binary_op(&tb, &st, number_pow);
+                break;
+            case SQRT: {
+                if (tb.count) {
+                    Number n = text_buffer_get(&tb);
+                    text_buffer_clear(&tb);
+                    stack_push(&st, n);
+                }
+                if (st.count) {
+                    Number a = stack_pop(&st);
+                    stack_push(&st, number_root(a, 2));
+                }
+            } break;
             case TOGGLE_SIGN:
                 text_toggle_negative(&tb);
                 break;

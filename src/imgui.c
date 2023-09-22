@@ -1,6 +1,7 @@
 #include "imgui.h"
 
-#include <raymath.h>
+size_t button_normal_color = 2;
+size_t button_pressed_color = 0;
 
 Rectangle get_screen_rect() {
     return (Rectangle){

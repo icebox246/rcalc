@@ -17,8 +17,8 @@ static const Color color_palette[] = {
 
 static const int gui_font_size = 30;
 
-static size_t button_normal_color = 2;
-static size_t button_pressed_color = 1;
+extern size_t button_normal_color;
+extern size_t button_pressed_color;
 
 Rectangle get_screen_rect();
 
