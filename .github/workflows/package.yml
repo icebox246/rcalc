@@ -1,6 +1,5 @@
 name: Compile and upload
-on: 
-  workflow-dispatch
+on: workflow_dispatch
 
 jobs:
   gradle:
