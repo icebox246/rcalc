@@ -4,6 +4,8 @@ on: workflow_dispatch
 jobs:
   gradle:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/android-sdk
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -53,7 +55,7 @@ jobs:
         cat ks_pass ks_pass > ks_creds
         echo -ne '\n\n\n\n\n\nyes\n' >> ks_creds
         keytool -genkey -alias rcalc -keyalg RSA -keystore keystore.jks < ks_creds
-        /root/.android/sdk/build-tools/33.0.1/apksigner sign --ks keystore.jks RCalc.apk < ks_pass
+        $ANDROID_SDK_ROOT/build-tools/33.0.1/apksigner sign --ks keystore.jks RCalc.apk < ks_pass
 
     - uses: actions/upload-artifact@v3
       with:
