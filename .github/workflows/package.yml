@@ -20,7 +20,7 @@ jobs:
     - name: Install other dependencies
       run: |
         sudo apt update
-        sudo apt install make unzip wget openssl
+        sudo apt install make unzip wget openssl locate
 
     - name: Cache Android NDK
       id: cache-android-ndk
