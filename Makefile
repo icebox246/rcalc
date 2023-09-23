@@ -44,10 +44,6 @@ install: rcalc
 
 check:
 ifdef ANDROID
-ifndef JAVA_HOME
-	@echo JAVA_HOME must be provided
-	@exit 1
-endif
 ifndef ANDROID_NDK
 	@echo ANDROID_NDK must be provided
 	@exit 1
