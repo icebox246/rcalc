@@ -51,7 +51,8 @@ jobs:
         cat ks_pass ks_pass > ks_creds
         echo -ne '\n\n\n\n\n\nyes\n' >> ks_creds
         keytool -genkey -alias rcalc -keyalg RSA -keystore keystore.jks < ks_creds
-        ~/.android/sdk/build-tools/*/apksigner sign --ks keystore.jks RCalc.apk < ks_pass
+        updatedb
+        `locate apksigner | head -1` sign --ks keystore.jks RCalc.apk < ks_pass
 
     - uses: actions/upload-artifact@v3
       with:
