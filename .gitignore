@@ -2,3 +2,7 @@ librcalc.so
 rcalc
 env.sh
 RCalc.apk
+RCalc.apk.idsig
+ks_pass
+ks_creds
+keystore.jks

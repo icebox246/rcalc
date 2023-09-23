@@ -20,7 +20,7 @@ jobs:
     - name: Install other dependencies
       run: |
         sudo apt update
-        sudo apt install make unzip wget
+        sudo apt install make unzip wget openssl
 
     - name: Setup Android NDK
       run: |
@@ -34,6 +34,14 @@ jobs:
       env:
         ANDROID: 1
         ANDROID_NDK: android-ndk-r26
+
+    - name: Sign the app
+      run: |
+        openssl rand -base64 16 > ks_pass 
+        cat ks_pass ks_pass > ks_creds
+        echo -ne '\n\n\n\n\n\nyes\n' >> ks_creds
+        keytool -genkey -alias rcalc -keyalg RSA -keystore keystore.jks < ks_creds
+        apksigner sign --ks keystore.jks RCalc.apk < ks_pass
 
     - uses: actions/upload-artifact@v3
       with:
