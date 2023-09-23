@@ -22,9 +22,19 @@ jobs:
         sudo apt update
         sudo apt install make unzip wget openssl
 
+    - name: Cache Android NDK
+      id: cache-android-ndk
+      uses: actions/cache@v3
+      with:
+        path: android-ndk-r26-linux.zip
+        key: ${{ runner.os }}-android-ndk
+
+    - name: Download Android NDK
+      if: steps.cache-android-ndk.outputs.cache-hit != 'true'
+      run: wget 'https://dl.google.com/android/repository/android-ndk-r26-linux.zip'
+
     - name: Setup Android NDK
       run: |
-        wget 'https://dl.google.com/android/repository/android-ndk-r26-linux.zip'
         unzip android-ndk-r26-linux.zip
 
     - name: Compile the app
@@ -41,7 +51,7 @@ jobs:
         cat ks_pass ks_pass > ks_creds
         echo -ne '\n\n\n\n\n\nyes\n' >> ks_creds
         keytool -genkey -alias rcalc -keyalg RSA -keystore keystore.jks < ks_creds
-        apksigner sign --ks keystore.jks RCalc.apk < ks_pass
+        ~/.android/sdk/build-tools/*/apksigner sign --ks keystore.jks RCalc.apk < ks_pass
 
     - uses: actions/upload-artifact@v3
       with:
