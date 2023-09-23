@@ -42,6 +42,10 @@ endif
 install: rcalc
 	cd android-shim && ./gradlew installDebug
 
+package: rcalc
+	cd android-shim && ./gradlew packageRelease
+	cp android-shim/app/build/outputs/apk/release/app-release-unsigned.apk RCalc.apk
+
 check:
 ifdef ANDROID
 ifndef ANDROID_NDK

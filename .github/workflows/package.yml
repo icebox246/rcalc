@@ -1,0 +1,42 @@
+name: Compile and upload
+on: 
+  workflow-dispatch
+
+jobs:
+  gradle:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+
+    - name: Install other dependencies
+      run: |
+        sudo apt update
+        sudo apt install make unzip wget
+
+    - name: Setup Android NDK
+      run: |
+        wget 'https://dl.google.com/android/repository/android-ndk-r26-linux.zip'
+        unzip android-ndk-r26-linux.zip
+
+    - name: Compile the app
+      run: |
+        make package
+        cp android-shim/app/build/outputs/apk/release/app-release-unsigned.apk RCalc.apk
+      env:
+        ANDROID: 1
+        ANDROID_NDK: android-ndk-r26
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: RCalc.apk
+        path: RCalc.apk
